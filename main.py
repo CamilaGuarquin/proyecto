@@ -48,3 +48,17 @@ app = FastAPI(tittle='Mi aplicación de películas', version='1.0.0')
 def home():
     # Cuando entremps en el navegador a a http://127.0.0.1:8000 veremos un mensaje de bienvenida
     return HTMLResponse('<h1> Bienvenido a la API de peliculas </h1>') 
+
+# Obteniendo la lista de peliculasq
+# Creamos una ruta para obtener todas las peliculas
+# Ruta para obtener todas las peliculas 
+@app.get('/movies', tags=['Movies'])
+def get_movies():
+    # Si hay peliculas, las enviamos, si no mostramos un error
+    return movies_list or HTMLResponse(status_code=500, detail="No hay datos de peliculas disponibles")
+
+# Ruta para obtener una pelicula específica por su ID
+@app.get('/movies/{id}', tags=['Movies'])
+def get_movies(id: str):
+    # Buscamos en la lista de peliculas la que tenga el mismo ID
+    return next((m for m in movies_list if m ['id'] == id), {"Detalle": "Pelicula no encontrada"})

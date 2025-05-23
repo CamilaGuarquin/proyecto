@@ -62,3 +62,24 @@ def get_movies():
 def get_movies(id: str):
     # Buscamos en la lista de peliculas la que tenga el mismo ID
     return next((m for m in movies_list if m ['id'] == id), {"Detalle": "Pelicula no encontrada"})
+
+# Ruta del chatbot que responde a películas según palabras clave de la categoria
+@app.get('/chatbot', tags=['chatbot'])
+def chatbot(query: str):
+    # Dividimos la consulta en palbras clave, para entener mejor la intensión del usuario
+    query_words = word_tokenize(query.lower())
+    # Buscamos sinónimos de las palabras clave para ampliar la búsqueda
+    synonyms = {word for q in query_words for word in get_synonyms(q)} | set(query_words)
+    
+    # Filtramos la lista de peliculas buscando coinsidencias en la categoria
+    results =[m for m in movies_list if any (s in m ['category'].lowe() for s in synonyms)]
+    
+    # Si encontramos las peliculas, enviamos la lista de peliculas; sino, mostramos un mensaje de que no se encontaron coinsidencias 
+    
+    return JSONResponse (content={
+        "respuesta": "aqui tienes algunas peliculas relacionadas." if results else "no encontre peliculas en esa categoria.", 
+        "peliculas": results
+    })
+    
+# Ruta para buscar la lista de peliculas según la categoria ingresada
+return [m for m in movies_list if category.lower() in m ['category'].lower]
